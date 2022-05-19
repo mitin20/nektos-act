@@ -1,0 +1,26 @@
+# requires mvn package before 
+# FROM openjdk:8
+
+# WORKDIR /work
+
+# COPY target/*.jar /work/
+
+# ENTRYPOINT ["java","-jar","/work/hello.jar"]
+
+# local tests
+# docker build -t mitin20/hello-spring:latest .
+# docker run --rm -p 8080:8080 mitin20/hello-spring:latest
+# curl localhost:8080
+
+# container runnig mvn
+FROM maven:3.6-jdk-8-alpine AS builder
+WORKDIR /work
+COPY pom.xml .
+RUN mvn -e -B dependency:resolve
+COPY ./src ./src
+RUN mvn -e -B package
+
+FROM openjdk:8-jre-alpine
+WORKDIR /work
+COPY --from=builder /work/target/*.jar /work/
+ENTRYPOINT ["java","-jar","/work/hello.jar"]

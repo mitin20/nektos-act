@@ -1,4 +1,4 @@
-name: cd
+name: cd-helm
 
 on:
   push:
@@ -10,10 +10,11 @@ jobs:
     name: deploy to cluster
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
-    - name: deploy to cluster
+    - name: deploy postgres to cluster
       uses: wahyd4/kubectl-helm-action@master
       env:
         KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
       with:
-        args: kubectl apply -f k8s-pod.yaml
+        args: |
+          helm list
+    

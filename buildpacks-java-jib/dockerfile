@@ -1,0 +1,12 @@
+FROM openjdk:8
+
+WORKDIR /work
+
+COPY target/*.jar /work/
+
+ENTRYPOINT ["java","-jar","/work/hello.jar"]
+
+# local tests
+# docker build -t mitin20/hello-spring:latest .
+# docker run --rm -p 8080:8080 mitin20/hello-spring:latest
+# curl localhost:8080

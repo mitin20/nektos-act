@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.skaffold</groupId>
+    <artifactId>hello-spring-boot</artifactId>
+    <version>0.0.1</version>
+    <description>Spring Boot</description>
+
+    <properties>
+        <java.version>1.8</java.version>
+
+        <!-- jib porps -->
+        <repo>mitin20</repo>
+        <image-version>${project.version}</image-version>
+        <!-- giving access to mount volumes with certs -->
+        <jib.container.volumes.volume>/etc/ssl/certs/java/</jib.container.volumes.volume>        
+
+    </properties>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.0.5.RELEASE</version>
+    </parent>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>hello</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+    <!-- jib profile  (build tag and push all in one mvn package -Pdocker-image -Dmaven.test.skip=true) -->
+    <profiles>
+        <profile>
+            <id>docker-image</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.google.cloud.tools</groupId>
+                        <artifactId>jib-maven-plugin</artifactId>
+                        <version>2.6.0</version>
+                        <configuration>
+                            <to>
+                                <image>
+                                    ${repo}/${artifactId}-image:${project.version}
+                                </image>
+                            </to>
+                            <from>
+                                <image>gcr.io/distroless/java:11</image>
+                                <!--image>openjdk:11</image-->
+                            </from>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>build</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+</project>
